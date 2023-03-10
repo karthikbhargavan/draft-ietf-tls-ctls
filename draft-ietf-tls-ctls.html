@@ -1553,6 +1553,7 @@ explicitly anywhere.<a href="#section-2.1.1.7-4.1.1" class="pilcrow">¶</a></p>
 struct {
   Extension predefined_extensions&lt;0..2^16-1&gt;;
   ExtensionType expected_extensions&lt;0..2^16-1&gt;;
+  ExtensionType self_delimiting_extensions&lt;0..2^16-1&gt;;
   uint8 allow_additional;
 } CTLSExtensionTemplate;
 </pre><a href="#section-2.1.1.8-2" class="pilcrow">¶</a>
@@ -1564,43 +1565,51 @@ extensions to be omitted entirely.<a href="#section-2.1.1.8-3" class="pilcrow">�
 in the corresponding message, at the beginning of its <code>extensions</code> field.
 The types of these extensions are omitted when serializing the <code>extensions</code>
 field of the corresponding message.<a href="#section-2.1.1.8-4" class="pilcrow">¶</a></p>
-<p id="section-2.1.1.8-5">The <code>allow_additional</code> field MUST be 0 (false) or 1 (true), indicating whether
-additional extensions are allowed here.<a href="#section-2.1.1.8-5" class="pilcrow">¶</a></p>
-<p id="section-2.1.1.8-6"><code>predefined_extensions</code> and <code>expected_extensions</code> MUST be in strictly ascending
+<p id="section-2.1.1.8-5">The <code>self_delimiting_extensions</code> field indicates extensions whose data is
+self-delimiting. The cTLS implementation MUST be able to parse all these
+extensions, and all extensions listed in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>.<a href="#section-2.1.1.8-5" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.8-6">The <code>allow_additional</code> field MUST be 0 (false) or 1 (true), indicating whether
+additional extensions are allowed here.<a href="#section-2.1.1.8-6" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.8-7"><code>predefined_extensions</code> and <code>expected_extensions</code> MUST be in strictly ascending
 order by <code>ExtensionType</code>, and a single <code>ExtensionType</code> MUST NOT appear in both
 lists.  If the <code>version</code>, <code>dh_group</code>, or <code>signature_algorithm</code> element appears
 in the template, the corresponding <code>ExtensionType</code> MUST NOT appear here.  The
-<code>pre_shared_key</code> <code>ExtensionType</code> MUST NOT appear in either list.<a href="#section-2.1.1.8-6" class="pilcrow">¶</a></p>
+<code>pre_shared_key</code> <code>ExtensionType</code> MUST NOT appear in either list.<a href="#section-2.1.1.8-7" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.1.1.8-7.1">
-                <p id="section-2.1.1.8-7.1.1">OPEN ISSUE: Are there other extensions that would benefit from special
-treatment, as opposed to hex values.<a href="#section-2.1.1.8-7.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-2.1.1.8-8.1">
+                <p id="section-2.1.1.8-8.1.1">OPEN ISSUE: Are there other extensions that would benefit from special
+treatment, as opposed to hex values.<a href="#section-2.1.1.8-8.1.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
-<p id="section-2.1.1.8-8">Static vectors (see <a href="#static-vectors" class="auto internal xref">Section 2.1.2</a>):<a href="#section-2.1.1.8-8" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.8-9">Static vectors (see <a href="#static-vectors" class="auto internal xref">Section 2.1.2</a>):<a href="#section-2.1.1.8-9" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.1.1.8-9.1">
-                <code>Extension.extension_data</code> for any extension in <code>expected_extensions</code> whose value is self-delimiting (e.g., fixed length).  This applies only to the corresponding message.<a href="#section-2.1.1.8-9.1" class="pilcrow">¶</a>
+<li class="normal" id="section-2.1.1.8-10.1">
+                <code>Extension.extension_data</code> for any extension whose type is in
+<code>self_delimiting_extensions</code>, or is listed in
+<span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> except <code>padding</code>.  This applies only to the corresponding message.<a href="#section-2.1.1.8-10.1" class="pilcrow">¶</a>
 </li>
-              <li class="normal" id="section-2.1.1.8-9.2">The <code>extensions</code> field of the corresponding message, if <code>allow_additional</code> is false.<a href="#section-2.1.1.8-9.2" class="pilcrow">¶</a>
+              <li class="normal" id="section-2.1.1.8-10.2">The <code>extensions</code> field of the corresponding message, if <code>allow_additional</code> is false.<a href="#section-2.1.1.8-10.2" class="pilcrow">¶</a>
 </li>
             </ul>
-<p id="section-2.1.1.8-10">In JSON, this value is represented as a dictionary with three keys:<a href="#section-2.1.1.8-10" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.8-11">In JSON, this value is represented as a dictionary with three keys:<a href="#section-2.1.1.8-11" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.1.1.8-11.1">
-                <code>predefinedExtensions</code>: a dictionary mapping <code>ExtensionType</code> names (<span>[<a href="#RFC8446" class="cite xref">RFC8446</a>], <a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a></span>) to values encoded as hexadecimal strings.<a href="#section-2.1.1.8-11.1" class="pilcrow">¶</a>
+<li class="normal" id="section-2.1.1.8-12.1">
+                <code>predefinedExtensions</code>: a dictionary mapping <code>ExtensionType</code> names (<span>[<a href="#RFC8446" class="cite xref">RFC8446</a>], <a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a></span>) to values encoded as hexadecimal strings.<a href="#section-2.1.1.8-12.1" class="pilcrow">¶</a>
 </li>
-              <li class="normal" id="section-2.1.1.8-11.2">
-                <code>expectedExtensions</code>: an array of <code>ExtensionType</code> names.<a href="#section-2.1.1.8-11.2" class="pilcrow">¶</a>
+              <li class="normal" id="section-2.1.1.8-12.2">
+                <code>expectedExtensions</code>: an array of <code>ExtensionType</code> names.<a href="#section-2.1.1.8-12.2" class="pilcrow">¶</a>
 </li>
-              <li class="normal" id="section-2.1.1.8-11.3">
-                <code>allowAdditional</code>: <code>true</code> or <code>false</code>.<a href="#section-2.1.1.8-11.3" class="pilcrow">¶</a>
+              <li class="normal" id="section-2.1.1.8-12.3">
+                <code>selfDelimitingExtensions</code>: an array of <code>ExtensionType</code> names.<a href="#section-2.1.1.8-12.3" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-2.1.1.8-12.4">
+                <code>allowAdditional</code>: <code>true</code> or <code>false</code>.<a href="#section-2.1.1.8-12.4" class="pilcrow">¶</a>
 </li>
             </ul>
-<p id="section-2.1.1.8-12">If <code>predefinedExtensions</code> or <code>expectedExtensions</code> is empty, it MAY be omitted.<a href="#section-2.1.1.8-12" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.8-13">If <code>predefinedExtensions</code> or <code>expectedExtensions</code> is empty, it MAY be omitted.<a href="#section-2.1.1.8-13" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.1.1.8-13.1">
-                <p id="section-2.1.1.8-13.1.1">OPEN ISSUE: Should we have a <code>certificate_entry_extensions</code> element?<a href="#section-2.1.1.8-13.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-2.1.1.8-14.1">
+                <p id="section-2.1.1.8-14.1.1">OPEN ISSUE: Should we have a <code>certificate_entry_extensions</code> element?<a href="#section-2.1.1.8-14.1.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </section>
@@ -1718,13 +1727,8 @@ strategy has significant privacy implications.<a href="#section-2.1.1.12-9" clas
 <p id="section-2.1.2-1">Some cTLS template elements imply that certain vectors (as defined in <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>], <a href="https://rfc-editor.org/rfc/rfc8446#section-3.4" class="relref">Section 3.4</a></span>) have a fixed number of elements during the handshake.  These
 template elements note these "static vectors" in their definition.  When encoding
 a "static vector", its length prefix is omitted.<a href="#section-2.1.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.1.2-2">In addition to the static vectors implied by various template elements,
-<code>Extension.extension_data</code> is always static in cTLS if the extension is any
-type listed in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> except <code>padding</code>.  cTLS implementations
-MUST be able to parse any of these extensions that the other party is permitted to
-send, but no other support is required.<a href="#section-2.1.2-2" class="pilcrow">¶</a></p>
-<p id="section-2.1.2-3">For example, suppose that the cTLS template is:<a href="#section-2.1.2-3" class="pilcrow">¶</a></p>
-<div class="lang-JSON sourcecode" id="section-2.1.2-4">
+<p id="section-2.1.2-2">For example, suppose that the cTLS template is:<a href="#section-2.1.2-2" class="pilcrow">¶</a></p>
+<div class="lang-JSON sourcecode" id="section-2.1.2-3">
 <pre>
 {
   "ctlsVersion": 0,
@@ -1735,10 +1739,10 @@ send, but no other support is required.<a href="#section-2.1.2-2" class="pilcrow
     "allowAdditional": false
   }
 }
-</pre><a href="#section-2.1.2-4" class="pilcrow">¶</a>
+</pre><a href="#section-2.1.2-3" class="pilcrow">¶</a>
 </div>
-<p id="section-2.1.2-5">Then, the following structure:<a href="#section-2.1.2-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-2.1.2-6">
+<p id="section-2.1.2-4">Then, the following structure:<a href="#section-2.1.2-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-2.1.2-5">
 <pre>
    28                 // length(extensions)
    33 26              // extension_type = KeyShare
@@ -1746,30 +1750,30 @@ send, but no other support is required.<a href="#section-2.1.2-2" class="pilcrow
        001d           // KeyShareEntry.group
        0020           // length(KeyShareEntry.key_exchange)
          a690...af948 // KeyShareEntry.key_exchange
-</pre><a href="#section-2.1.2-6" class="pilcrow">¶</a>
+</pre><a href="#section-2.1.2-5" class="pilcrow">¶</a>
 </div>
-<p id="section-2.1.2-7">is compressed down to:<a href="#section-2.1.2-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-2.1.2-8">
+<p id="section-2.1.2-6">is compressed down to:<a href="#section-2.1.2-6" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-2.1.2-7">
 <pre>
    a690...af948 // KeyShareEntry.key_exchange
-</pre><a href="#section-2.1.2-8" class="pilcrow">¶</a>
+</pre><a href="#section-2.1.2-7" class="pilcrow">¶</a>
 </div>
-<p id="section-2.1.2-9">according to the following rationale:<a href="#section-2.1.2-9" class="pilcrow">¶</a></p>
+<p id="section-2.1.2-8">according to the following rationale:<a href="#section-2.1.2-8" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.1.2-10.1">The length of <code>extensions</code> is omitted because <code>allowAdditional</code> is false, so
-the number of items in <code>extensions</code> (i.e., 1) is known in advance.<a href="#section-2.1.2-10.1" class="pilcrow">¶</a>
+<li class="normal" id="section-2.1.2-9.1">The length of <code>extensions</code> is omitted because <code>allowAdditional</code> is false, so
+the number of items in <code>extensions</code> (i.e., 1) is known in advance.<a href="#section-2.1.2-9.1" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-2.1.2-10.2">
-              <code>extension_type</code> is omitted because it is specified by <code>expected_extensions</code>.<a href="#section-2.1.2-10.2" class="pilcrow">¶</a>
+            <li class="normal" id="section-2.1.2-9.2">
+              <code>extension_type</code> is omitted because it is specified by <code>expected_extensions</code>.<a href="#section-2.1.2-9.2" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-2.1.2-10.3">The length of <code>client_shares</code> is omitted because the use of <code>dhGroup</code> implies
-that there can only be one <code>KeyShareEntry</code>.<a href="#section-2.1.2-10.3" class="pilcrow">¶</a>
+            <li class="normal" id="section-2.1.2-9.3">The length of <code>client_shares</code> is omitted because the use of <code>dhGroup</code> implies
+that there can only be one <code>KeyShareEntry</code>.<a href="#section-2.1.2-9.3" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-2.1.2-10.4">
-              <code>KeyShareEntry.group</code> is omitted because it is specified by <code>dhGroup</code>.<a href="#section-2.1.2-10.4" class="pilcrow">¶</a>
+            <li class="normal" id="section-2.1.2-9.4">
+              <code>KeyShareEntry.group</code> is omitted because it is specified by <code>dhGroup</code>.<a href="#section-2.1.2-9.4" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-2.1.2-10.5">The length of the <code>key_exchange</code> is omitted because the "x25519" key share
-has a fixed size (32 bytes).<a href="#section-2.1.2-10.5" class="pilcrow">¶</a>
+            <li class="normal" id="section-2.1.2-9.5">The length of the <code>key_exchange</code> is omitted because the "x25519" key share
+has a fixed size (32 bytes).<a href="#section-2.1.2-9.5" class="pilcrow">¶</a>
 </li>
           </ul>
 </section>
