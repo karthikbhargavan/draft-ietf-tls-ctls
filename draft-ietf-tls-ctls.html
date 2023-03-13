@@ -1058,7 +1058,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla, et al.</td>
-<td class="center">Expires 12 September 2023</td>
+<td class="center">Expires 14 September 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1071,12 +1071,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-tls-ctls-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-03-11" class="published">11 March 2023</time>
+<time datetime="2023-03-13" class="published">13 March 2023</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2023-09-12">12 September 2023</time></dd>
+<dd class="expires"><time datetime="2023-09-14">14 September 2023</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1125,7 +1125,7 @@ can, however, offer cTLS alongside TLS or DTLS.<a href="#section-abstract-1" cla
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 12 September 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 14 September 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1383,16 +1383,11 @@ It consists of a dictionary whose keys are the name of each element type (conver
 from snake_case to camelCase), and whose values are a type-specific representation
 of the element intended to maximize legibility.  The cTLS version is represented
 by the key "ctlsVersion", whose value is an integer, defaulting to 0 if omitted.<a href="#section-2.1-11" class="pilcrow">¶</a></p>
-<ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.1-12.1">
-            <p id="section-2.1-12.1.1">OPEN ISSUE: Is it really worth converting snake_case to camelCase?  camelCase is slightly more traditional in JSON, and saves one byte, but it seems annoying to implement.<a href="#section-2.1-12.1.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-2.1-13">For example, the following specialization describes a protocol with a single fixed
+<p id="section-2.1-12">For example, the following specialization describes a protocol with a single fixed
 version (TLS 1.3) and a single fixed cipher suite (TLS_AES_128_GCM_SHA256). On the
 wire, ClientHello.cipher_suites, ServerHello.cipher_suites, and the
-supported_versions extensions in the ClientHello and ServerHello would be omitted.<a href="#section-2.1-13" class="pilcrow">¶</a></p>
-<div class="lang-JSON sourcecode" id="section-2.1-14">
+supported_versions extensions in the ClientHello and ServerHello would be omitted.<a href="#section-2.1-12" class="pilcrow">¶</a></p>
+<div class="lang-JSON sourcecode" id="section-2.1-13">
 <pre>
 {
   "ctlsVersion": 0,
@@ -1400,7 +1395,7 @@ supported_versions extensions in the ClientHello and ServerHello would be omitte
   "version": 772,
   "cipherSuite": "TLS_AES_128_GCM_SHA256"
 }
-</pre><a href="#section-2.1-14" class="pilcrow">¶</a>
+</pre><a href="#section-2.1-13" class="pilcrow">¶</a>
 </div>
 <div id="initial-template-elements">
 <section id="section-2.1.1">

@@ -5,12 +5,12 @@
 TLS Working Group                                            E. Rescorla
 Internet-Draft                                                   Mozilla
 Intended status: Standards Track                               R. Barnes
-Expires: 12 September 2023                                         Cisco
+Expires: 14 September 2023                                         Cisco
                                                            H. Tschofenig
                                                                         
                                                              B. Schwartz
                                                                   Google
-                                                           11 March 2023
+                                                           13 March 2023
 
 
                             Compact TLS 1.3
@@ -40,7 +40,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 September 2023.
+   This Internet-Draft will expire on 14 September 2023.
 
 Copyright Notice
 
@@ -222,10 +222,6 @@ Table of Contents
    values are a type-specific representation of the element intended to
    maximize legibility.  The cTLS version is represented by the key
    "ctlsVersion", whose value is an integer, defaulting to 0 if omitted.
-
-      OPEN ISSUE: Is it really worth converting snake_case to camelCase?
-      camelCase is slightly more traditional in JSON, and saves one
-      byte, but it seems annoying to implement.
 
    For example, the following specialization describes a protocol with a
    single fixed version (TLS 1.3) and a single fixed cipher suite
