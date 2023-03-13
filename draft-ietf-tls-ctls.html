@@ -1367,27 +1367,22 @@ struct {
 } CTLSTemplate;
 </pre><a href="#section-2.1-8" class="pilcrow">¶</a>
 </div>
-<ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.1-9.1">
-            <p id="section-2.1-9.1.1">TODO: Reorder enum.<a href="#section-2.1-9.1.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-2.1-10">Elements in a <code>CTLSTemplate</code> MUST appear sorted by the type field in strictly
+<p id="section-2.1-9">Elements in a <code>CTLSTemplate</code> MUST appear sorted by the type field in strictly
 ascending order.  The initial elements are defined in the subsections below.
 Future elements can be added via an IANA registry (<a href="#template-keys" class="auto internal xref">Section 6.2</a>).  When
 generating a template, all elements are OPTIONAL to include.  When processing
 a template, all elements are mandatory to understand (but see discussion of
-<code>optional</code> in <a href="#optional" class="auto internal xref">Section 2.1.1.11</a>).<a href="#section-2.1-10" class="pilcrow">¶</a></p>
-<p id="section-2.1-11">For ease of configuration, an equivalent JSON dictionary format is also defined.
+<code>optional</code> in <a href="#optional" class="auto internal xref">Section 2.1.1.11</a>).<a href="#section-2.1-9" class="pilcrow">¶</a></p>
+<p id="section-2.1-10">For ease of configuration, an equivalent JSON dictionary format is also defined.
 It consists of a dictionary whose keys are the name of each element type (converted
 from snake_case to camelCase), and whose values are a type-specific representation
 of the element intended to maximize legibility.  The cTLS version is represented
-by the key "ctlsVersion", whose value is an integer, defaulting to 0 if omitted.<a href="#section-2.1-11" class="pilcrow">¶</a></p>
-<p id="section-2.1-12">For example, the following specialization describes a protocol with a single fixed
+by the key "ctlsVersion", whose value is an integer, defaulting to 0 if omitted.<a href="#section-2.1-10" class="pilcrow">¶</a></p>
+<p id="section-2.1-11">For example, the following specialization describes a protocol with a single fixed
 version (TLS 1.3) and a single fixed cipher suite (TLS_AES_128_GCM_SHA256). On the
 wire, ClientHello.cipher_suites, ServerHello.cipher_suites, and the
-supported_versions extensions in the ClientHello and ServerHello would be omitted.<a href="#section-2.1-12" class="pilcrow">¶</a></p>
-<div class="lang-JSON sourcecode" id="section-2.1-13">
+supported_versions extensions in the ClientHello and ServerHello would be omitted.<a href="#section-2.1-11" class="pilcrow">¶</a></p>
+<div class="lang-JSON sourcecode" id="section-2.1-12">
 <pre>
 {
   "ctlsVersion": 0,
@@ -1395,18 +1390,13 @@ supported_versions extensions in the ClientHello and ServerHello would be omitte
   "version": 772,
   "cipherSuite": "TLS_AES_128_GCM_SHA256"
 }
-</pre><a href="#section-2.1-13" class="pilcrow">¶</a>
+</pre><a href="#section-2.1-12" class="pilcrow">¶</a>
 </div>
 <div id="initial-template-elements">
 <section id="section-2.1.1">
           <h4 id="name-initial-template-elements">
 <a href="#section-2.1.1" class="section-number selfRef">2.1.1. </a><a href="#name-initial-template-elements" class="section-name selfRef">Initial template elements</a>
           </h4>
-<ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.1.1-1.1">
-              <p id="section-2.1.1-1.1.1">TODO: Reorder section.<a href="#section-2.1.1-1.1.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
 <div id="profile">
 <section id="section-2.1.1.1">
             <h5 id="name-profile">
@@ -1534,13 +1524,29 @@ explicitly anywhere.<a href="#section-2.1.1.7-4.1.1" class="pilcrow">¶</a></p>
             </ul>
 </section>
 </div>
-<div id="clienthelloextensions-serverhelloextensions-encryptedextensions-and-certificaterequestextensions">
+<div id="handshakeframing">
 <section id="section-2.1.1.8">
-            <h5 id="name-client_hello_extensions-ser">
-<a href="#section-2.1.1.8" class="section-number selfRef">2.1.1.8. </a><a href="#name-client_hello_extensions-ser" class="section-name selfRef"><code>client_hello_extensions</code>, <code>server_hello_extensions</code>, <code>encrypted_extensions</code>, and <code>certificate_request_extensions</code></a>
+            <h5 id="name-handshake_framing">
+<a href="#section-2.1.1.8" class="section-number selfRef">2.1.1.8. </a><a href="#name-handshake_framing" class="section-name selfRef"><code>handshake_framing</code></a>
             </h5>
-<p id="section-2.1.1.8-1">Value: a single <code>CTLSExtensionTemplate</code> struct:<a href="#section-2.1.1.8-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-2.1.1.8-2">
+<p id="section-2.1.1.8-1">Value: <code>uint8</code>, with 0 indicating "false" and 1 indicating "true".
+If true, handshake messages MUST be conveyed inside a <code>Handshake</code>
+(<span>[<a href="#RFC8446" class="cite xref">RFC8446</a>], <a href="https://rfc-editor.org/rfc/rfc8446#section-4" class="relref">Section 4</a></span>) struct on reliable, ordered transports, or a
+<code>DTLSHandshake</code> (<span>[<a href="#RFC9147" class="cite xref">RFC9147</a>], <a href="https://rfc-editor.org/rfc/rfc9147#section-5.2" class="relref">Section 5.2</a></span>) struct otherwise,
+and MAY be broken into multiple records as in TLS and DTLS.  If false,
+each handshake message is conveyed in a <code>CTLSHandshake</code> or
+<code>CTLSDatagramHandshake</code> struct (<a href="#ctlshandshake" class="auto internal xref">Section 2.3</a>), which MUST be the payload
+of a single record.<a href="#section-2.1.1.8-1" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.8-2">In JSON, this value is represented as <code>true</code> or <code>false</code>.<a href="#section-2.1.1.8-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="clienthelloextensions-serverhelloextensions-encryptedextensions-and-certificaterequestextensions">
+<section id="section-2.1.1.9">
+            <h5 id="name-client_hello_extensions-ser">
+<a href="#section-2.1.1.9" class="section-number selfRef">2.1.1.9. </a><a href="#name-client_hello_extensions-ser" class="section-name selfRef"><code>client_hello_extensions</code>, <code>server_hello_extensions</code>, <code>encrypted_extensions</code>, and <code>certificate_request_extensions</code></a>
+            </h5>
+<p id="section-2.1.1.9-1">Value: a single <code>CTLSExtensionTemplate</code> struct:<a href="#section-2.1.1.9-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-2.1.1.9-2">
 <pre>
 struct {
   Extension predefined_extensions&lt;0..2^16-1&gt;;
@@ -1548,99 +1554,83 @@ struct {
   ExtensionType self_delimiting_extensions&lt;0..2^16-1&gt;;
   uint8 allow_additional;
 } CTLSExtensionTemplate;
-</pre><a href="#section-2.1.1.8-2" class="pilcrow">¶</a>
+</pre><a href="#section-2.1.1.9-2" class="pilcrow">¶</a>
 </div>
-<p id="section-2.1.1.8-3">The <code>predefined_extensions</code> field indicates extensions that should be treated
+<p id="section-2.1.1.9-3">The <code>predefined_extensions</code> field indicates extensions that should be treated
 as if they were included in the corresponding message.  This allows these
-extensions to be omitted entirely.<a href="#section-2.1.1.8-3" class="pilcrow">¶</a></p>
-<p id="section-2.1.1.8-4">The <code>expected_extensions</code> field indicates extensions that must be included
+extensions to be omitted entirely.<a href="#section-2.1.1.9-3" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.9-4">The <code>expected_extensions</code> field indicates extensions that must be included
 in the corresponding message, at the beginning of its <code>extensions</code> field.
 The types of these extensions are omitted when serializing the <code>extensions</code>
-field of the corresponding message.<a href="#section-2.1.1.8-4" class="pilcrow">¶</a></p>
-<p id="section-2.1.1.8-5">The <code>self_delimiting_extensions</code> field indicates extensions whose data is
+field of the corresponding message.<a href="#section-2.1.1.9-4" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.9-5">The <code>self_delimiting_extensions</code> field indicates extensions whose data is
 self-delimiting. The cTLS implementation MUST be able to parse all these
-extensions, and all extensions listed in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>.<a href="#section-2.1.1.8-5" class="pilcrow">¶</a></p>
-<p id="section-2.1.1.8-6">The <code>allow_additional</code> field MUST be 0 (false) or 1 (true), indicating whether
-additional extensions are allowed here.<a href="#section-2.1.1.8-6" class="pilcrow">¶</a></p>
-<p id="section-2.1.1.8-7"><code>predefined_extensions</code> and <code>expected_extensions</code> MUST be in strictly ascending
+extensions, and all extensions listed in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>.<a href="#section-2.1.1.9-5" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.9-6">The <code>allow_additional</code> field MUST be 0 (false) or 1 (true), indicating whether
+additional extensions are allowed here.<a href="#section-2.1.1.9-6" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.9-7"><code>predefined_extensions</code> and <code>expected_extensions</code> MUST be in strictly ascending
 order by <code>ExtensionType</code>, and a single <code>ExtensionType</code> MUST NOT appear in both
 lists.  If the <code>version</code>, <code>dh_group</code>, or <code>signature_algorithm</code> element appears
 in the template, the corresponding <code>ExtensionType</code> MUST NOT appear here.  The
-<code>pre_shared_key</code> <code>ExtensionType</code> MUST NOT appear in either list.<a href="#section-2.1.1.8-7" class="pilcrow">¶</a></p>
+<code>pre_shared_key</code> <code>ExtensionType</code> MUST NOT appear in either list.<a href="#section-2.1.1.9-7" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.1.1.8-8.1">
-                <p id="section-2.1.1.8-8.1.1">OPEN ISSUE: Are there other extensions that would benefit from special
-treatment, as opposed to hex values.<a href="#section-2.1.1.8-8.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-2.1.1.9-8.1">
+                <p id="section-2.1.1.9-8.1.1">OPEN ISSUE: Are there other extensions that would benefit from special
+treatment, as opposed to hex values.<a href="#section-2.1.1.9-8.1.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
-<p id="section-2.1.1.8-9">Static vectors (see <a href="#static-vectors" class="auto internal xref">Section 2.1.2</a>):<a href="#section-2.1.1.8-9" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.9-9">Static vectors (see <a href="#static-vectors" class="auto internal xref">Section 2.1.2</a>):<a href="#section-2.1.1.9-9" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.1.1.8-10.1">
+<li class="normal" id="section-2.1.1.9-10.1">
                 <code>Extension.extension_data</code> for any extension whose type is in
 <code>self_delimiting_extensions</code>, or is listed in
-<span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> except <code>padding</code>.  This applies only to the corresponding message.<a href="#section-2.1.1.8-10.1" class="pilcrow">¶</a>
+<span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> except <code>padding</code>.  This applies only to the corresponding message.<a href="#section-2.1.1.9-10.1" class="pilcrow">¶</a>
 </li>
-              <li class="normal" id="section-2.1.1.8-10.2">The <code>extensions</code> field of the corresponding message, if <code>allow_additional</code> is false.<a href="#section-2.1.1.8-10.2" class="pilcrow">¶</a>
+              <li class="normal" id="section-2.1.1.9-10.2">The <code>extensions</code> field of the corresponding message, if <code>allow_additional</code> is false.<a href="#section-2.1.1.9-10.2" class="pilcrow">¶</a>
 </li>
             </ul>
-<p id="section-2.1.1.8-11">In JSON, this value is represented as a dictionary with three keys:<a href="#section-2.1.1.8-11" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.9-11">In JSON, this value is represented as a dictionary with three keys:<a href="#section-2.1.1.9-11" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.1.1.8-12.1">
-                <code>predefinedExtensions</code>: a dictionary mapping <code>ExtensionType</code> names (<span>[<a href="#RFC8446" class="cite xref">RFC8446</a>], <a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a></span>) to values encoded as hexadecimal strings.<a href="#section-2.1.1.8-12.1" class="pilcrow">¶</a>
+<li class="normal" id="section-2.1.1.9-12.1">
+                <code>predefinedExtensions</code>: a dictionary mapping <code>ExtensionType</code> names (<span>[<a href="#RFC8446" class="cite xref">RFC8446</a>], <a href="https://rfc-editor.org/rfc/rfc8446#section-4.2" class="relref">Section 4.2</a></span>) to values encoded as hexadecimal strings.<a href="#section-2.1.1.9-12.1" class="pilcrow">¶</a>
 </li>
-              <li class="normal" id="section-2.1.1.8-12.2">
-                <code>expectedExtensions</code>: an array of <code>ExtensionType</code> names.<a href="#section-2.1.1.8-12.2" class="pilcrow">¶</a>
+              <li class="normal" id="section-2.1.1.9-12.2">
+                <code>expectedExtensions</code>: an array of <code>ExtensionType</code> names.<a href="#section-2.1.1.9-12.2" class="pilcrow">¶</a>
 </li>
-              <li class="normal" id="section-2.1.1.8-12.3">
-                <code>selfDelimitingExtensions</code>: an array of <code>ExtensionType</code> names.<a href="#section-2.1.1.8-12.3" class="pilcrow">¶</a>
+              <li class="normal" id="section-2.1.1.9-12.3">
+                <code>selfDelimitingExtensions</code>: an array of <code>ExtensionType</code> names.<a href="#section-2.1.1.9-12.3" class="pilcrow">¶</a>
 </li>
-              <li class="normal" id="section-2.1.1.8-12.4">
-                <code>allowAdditional</code>: <code>true</code> or <code>false</code>.<a href="#section-2.1.1.8-12.4" class="pilcrow">¶</a>
+              <li class="normal" id="section-2.1.1.9-12.4">
+                <code>allowAdditional</code>: <code>true</code> or <code>false</code>.<a href="#section-2.1.1.9-12.4" class="pilcrow">¶</a>
 </li>
             </ul>
-<p id="section-2.1.1.8-13">If <code>predefinedExtensions</code> or <code>expectedExtensions</code> is empty, it MAY be omitted.<a href="#section-2.1.1.8-13" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.9-13">If <code>predefinedExtensions</code> or <code>expectedExtensions</code> is empty, it MAY be omitted.<a href="#section-2.1.1.9-13" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.1.1.8-14.1">
-                <p id="section-2.1.1.8-14.1.1">OPEN ISSUE: Should we have a <code>certificate_entry_extensions</code> element?<a href="#section-2.1.1.8-14.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-2.1.1.9-14.1">
+                <p id="section-2.1.1.9-14.1.1">OPEN ISSUE: Should we have a <code>certificate_entry_extensions</code> element?<a href="#section-2.1.1.9-14.1.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </section>
 </div>
 <div id="finishedsize">
-<section id="section-2.1.1.9">
+<section id="section-2.1.1.10">
             <h5 id="name-finished_size">
-<a href="#section-2.1.1.9" class="section-number selfRef">2.1.1.9. </a><a href="#name-finished_size" class="section-name selfRef"><code>finished_size</code></a>
+<a href="#section-2.1.1.10" class="section-number selfRef">2.1.1.10. </a><a href="#name-finished_size" class="section-name selfRef"><code>finished_size</code></a>
             </h5>
-<p id="section-2.1.1.9-1">Value: <code>uint8</code>, indicating that the Finished value is to be truncated to the given
-length.<a href="#section-2.1.1.9-1" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.10-1">Value: <code>uint8</code>, indicating that the Finished value is to be truncated to the given
+length.<a href="#section-2.1.1.10-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.1.1.9-2.1">
-                <p id="section-2.1.1.9-2.1.1">OPEN ISSUE: How short should we allow this to be? TLS 1.3 uses
+<li class="normal ulEmpty" id="section-2.1.1.10-2.1">
+                <p id="section-2.1.1.10-2.1.1">OPEN ISSUE: How short should we allow this to be? TLS 1.3 uses
 the native hash and TLS 1.2 used 12 bytes. More analysis is needed
 to know the minimum safe Finished size. See <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>], <a href="https://rfc-editor.org/rfc/rfc8446#appendix-E.1" class="relref">Appendix E.1</a></span>
 for more on this, as well as
 https://mailarchive.ietf.org/arch/msg/tls/TugB5ddJu3nYg7chcyeIyUqWSbA.
 The minimum safe size may vary depending on whether the template was
-learned via a trusted channel.<a href="#section-2.1.1.9-2.1.1" class="pilcrow">¶</a></p>
+learned via a trusted channel.<a href="#section-2.1.1.10-2.1.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
-<p id="section-2.1.1.9-3">In JSON, this length is represented as an integer.<a href="#section-2.1.1.9-3" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="handshakeframing">
-<section id="section-2.1.1.10">
-            <h5 id="name-handshake_framing">
-<a href="#section-2.1.1.10" class="section-number selfRef">2.1.1.10. </a><a href="#name-handshake_framing" class="section-name selfRef"><code>handshake_framing</code></a>
-            </h5>
-<p id="section-2.1.1.10-1">Value: <code>uint8</code>, with 0 indicating "false" and 1 indicating "true".
-If true, handshake messages MUST be conveyed inside a <code>Handshake</code>
-(<span>[<a href="#RFC8446" class="cite xref">RFC8446</a>], <a href="https://rfc-editor.org/rfc/rfc8446#section-4" class="relref">Section 4</a></span>) struct on reliable, ordered transports, or a
-<code>DTLSHandshake</code> (<span>[<a href="#RFC9147" class="cite xref">RFC9147</a>], <a href="https://rfc-editor.org/rfc/rfc9147#section-5.2" class="relref">Section 5.2</a></span>) struct otherwise,
-and MAY be broken into multiple records as in TLS and DTLS.  If false,
-each handshake message is conveyed in a <code>CTLSHandshake</code> or
-<code>CTLSDatagramHandshake</code> struct (<a href="#ctlshandshake" class="auto internal xref">Section 2.3</a>), which MUST be the payload
-of a single record.<a href="#section-2.1.1.10-1" class="pilcrow">¶</a></p>
-<p id="section-2.1.1.10-2">In JSON, this value is represented as <code>true</code> or <code>false</code>.<a href="#section-2.1.1.10-2" class="pilcrow">¶</a></p>
+<p id="section-2.1.1.10-3">In JSON, this length is represented as an integer.<a href="#section-2.1.1.10-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="optional">
