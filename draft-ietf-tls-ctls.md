@@ -263,16 +263,19 @@ Section 4.2.3}}. (e.g., ecdsa_secp256r1_sha256).
 
 Value: a single `uint8`.
 
-The `ClientHello.Random` and `ServerHello.Random` values
+In non PSK-only handshakes, this value MUST be zero, since the random values
+are derived from the ephemeral public keys. To derive the `ClientHello.Random`,
+we take the entire `KeyShare` extension, hash it with the hash function from
+the ciphersuite, and truncate the result to 32 bytes. To derive the `ServerHello.Random`,
+we take the entire `KeyShare` extension, hash it with the hash function from
+the chosen ciphersuite, and truncate the result to 32 bytes.
+
+In PSK-only handshakes, the `ClientHello.Random` and `ServerHello.Random` values
 are truncated to the given length.  Where a 32-byte `Random` is
 required, the Random is padded to the right with 0s and the
 anti-downgrade mechanism in {{RFC8446, Section 4.1.3}} is disabled.
 IMPORTANT: Using short Random values can lead to potential
 attacks. The Random length MUST be less than or equal to 32 bytes.
-
-> OPEN ISSUE: Karthik Bhargavan suggested the idea of hashing
-> ephemeral public keys and to use the result (truncated to 32 bytes)
-> as random values. Such a change would require a security analysis.
 
 In JSON, the length is represented as an integer.
 
@@ -646,7 +649,7 @@ similar to the prefix substitution in {{Section 5.9 of !RFC9147}}).
 
 The logical handshake layer consists of handshake messages that are reconstructed
 following the instructions in the template.  At this layer, predefined extensions
-are reintroduced, truncated Random values are extended, and all information is
+are reintroduced, Random values are reconstructed, and all information is
 prepared to enable the cryptographic handshake and any import or export of
 key material and configuration.
 
@@ -711,7 +714,7 @@ but without the unnecessary sentinel Random value.
 This section provides some example specializations.
 
 For this example we use TLS 1.3 only with AES_GCM,
-x25519, ALPN h2, short random values, and everything
+x25519, ALPN h2, no random values, and everything
 else is ordinary TLS 1.3.
 
 ~~~~JSON
@@ -719,7 +722,7 @@ else is ordinary TLS 1.3.
    "ctlsVersion": 0,
    "profile": "0504030201",
    "version" : 772,
-   "random": 16,
+   "random": 0,
    "cipherSuite" : "TLS_AES_128_GCM_SHA256",
    "dhGroup": "x25519",
    "clientHelloExtensions": {
@@ -847,12 +850,12 @@ The resulting byte counts are as follows:
               ------------------
               TLS  CTLS  Cryptovariables
               ---  ----  ---------------
-ClientHello   132   74       64
-ServerHello    90   68       64
+ClientHello   132   42       32
+ServerHello    90   36       32
 ServerFlight  478   92       72
 ClientFlight  458   91       72
 ========================================
-Total        1158  325      272
+Total        1158  261      208
 ~~~~~
 
 
@@ -892,25 +895,25 @@ The following compression profile was used in this example:
 }
 ~~~~~
 
-ClientHello: 74 bytes = Profile ID(5) + Random(32) + DH(32) + Overhead(5)
+ClientHello: 42 bytes = Profile ID(5) + DH(32) + Overhead(5)
 
 ~~~
 $TBD               // CTLSClientPlaintext.message_type = ctls_handshake
 05 abcdef1234      // CTLSClientPlaintext.profile_id
 0041               // CTLSClientPlaintext.fragment length = 65
   01               // CTLSHandshake.msg_type = client_hello
-    5856...c130    //   ClientHello.random (32 bytes)
+// ClientHello.random is omitted
 // ClientHello.extensions is omitted except for the key share contents.
       a690...f948  //     KeyShareEntry.key_exchange (32 bytes)
 ~~~
 
-ServerHello: 68 bytes = Random(32) + DH(32) + Overhead(4)
+ServerHello: 36 bytes = DH(32) + Overhead(4)
 
 ~~~
 $TBD               // CTLSServerPlaintext.message_type = ctls_handshake
 0041               // CTLSServerPlaintext.fragment length
   02               //   CTLSHandshake.msg_type = server_hello
-    cff4...9ca8    //     ServerHello.random (32 bytes)
+// ServerHello.random is omitted
 // ServerHello.extensions is omitted except for the key share contents.
       9fbc...0f49  //       KeyShareEntry.key_exchange (32 bytes)
 ~~~
